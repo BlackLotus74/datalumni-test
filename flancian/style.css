@@ -5,28 +5,35 @@
 
 .table-striped > tbody > tr:nth-child(even) {
   background-color: rgb(219, 219, 219);
+  border: 1px solid black;
 }
 .table-striped > tbody > tr:nth-child(odd) {
   background-color: white;
+  border: 1px solid black;
 }
 
 .table-striped > tfoot > tr:nth-child(odd) {
   background-color: rgb(255, 255, 255);
 }
 
-/*.table-striped thead,
+.table-striped thead,
+.table-striped thead th,
 .table-striped tbody td,
 .table-striped tbody tr,
 .table-striped tfoot td,
 .table-striped tfoot tr {
   border: 1px solid black;
-}*/
-
-.table-striped tbody tr{
-  border-style: initial;
-  color: currentColor;
 }
 
 .table-striped thead th{
   width: 20vw;
+}
+
+.table > thead > tr > th{
+  vertical-align: top;
+}
+
+.table > tfoot > tr > td{
+  font-weight: bold;
+  font-size: 1.1em;
 }

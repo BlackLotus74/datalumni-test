@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
-            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">>
+            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
@@ -16,9 +16,7 @@
 
 <body>
     <div class="container" class="table-responsive-sm">
-
         <div id="app">
-
             <h3>Employees</h3>
             <h5><i>This is the current list of employees</i></h5><br>
 
@@ -39,7 +37,6 @@
                 </thead>
 
                 <tbody id="tbody">
-
                     <tr id="emptyLine" style="display:table-row">
                         <td colspan="6">No employee</td>
                     </tr>
@@ -48,7 +45,7 @@
                         <td>{{ info.id }}</td>
                         <td>{{ info.employee_name }}</td>
                         <td>{{ info.email }}</td>
-                        <td class="pull-left">{{ info.monthly }}</td>
+                        <td>{{ info.monthly }} €</td>
                         <td>{{ info.birth }}</td>
 
                         <td class="" role="button">
@@ -101,10 +98,10 @@
                     },
                     duplicate: function (event) {
                         var lineId = event.target.dataset.id; //recupere data-id
-                        var numberLine = document.getElementById(lineId).cloneNode(true); //id ligne
-                        var arrayPopulate = document.getElementById('duplicate');
-                        arrayPopulate.appendChild(numberLine);
+                        var numberLine = document.getElementById(lineId).cloneNode(true); 
+                        document.getElementById('duplicate').appendChild(numberLine); 
                     },
+
                     deleteLine: function (event) {
                         var lineId2 = event.target.dataset.id; //recupere data-delete
                         var lineIndex = this.infos.findIndex(item => item.id == lineId2);
@@ -134,19 +131,16 @@
                                 this.infos[i].monthly = parseFloat((this.infos[i].employee_salary / 12).toFixed(2));
                                 this.somme += parseFloat(this.infos[i].monthly); //conversion en entier
 
-                                this.totalEmployee++; //incrementation du nombre d'employé
-                                this.infos[i].birth = dateNow - parseInt(this.infos[i]
-                                .employee_age); //calcule date
+                                this.totalEmployee++; 
+                                this.infos[i].birth = dateNow - parseInt(this.infos[i].employee_age);
 
                                 let strg = this.infos[i].employee_name.toLowerCase();
                                 let tab = strg.split(" ");
                                 let firstname = tab[0].charAt(0); //recup 1ere lettre du prenom
-                                let lastname = tab[
-                                1]; //recup nom                                                                            
+                                let lastname = tab[1]; //recup nom                                                                            
                                 this.infos[i].email = firstname + "." + lastname + "@email.com";
                             }
                             this.somme = this.somme.toFixed(2); //2 decimales apres la virgule
-
                             
                             this.checkRows();
                             console.log(this.infos);
