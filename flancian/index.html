@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <title>Datalumni's coding tests</title>
+</head>
+
+<body>
+    <div class="container" class="table-responsive-sm">
+
+        <div id="app">
+
+            <h3>Employees</h3>
+            <h5><i>This is the current list of employees</i></h5><br>
+
+            <table class="table table-striped table-sm border" id="duplicate">
+                <thead class="h-10">
+                    <tr>
+                        <th class="w-20 mt-2 p-2">EID</th>
+                        <th class="w-20 mt-2 p-2">Full name</th>
+                        <th class="w-15 mt-2 p-2">Email</th>
+                        <th class="w-20 mt-2 p-2">Monthly<br>Salary
+                            <button @click="sortedArray" class="pull-right">
+                                <i class="fa fa-sort" aria-hidden="true"></i>
+                            </button>
+                        </th>
+                        <th class="w-30 mt-2 p-2">Year of birth</th>
+                        <th class="w-25 mt-2 p-2">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tbody">
+
+                    <tr id="emptyLine" style="display:table-row">
+                        <td colspan="6">No employee</td>
+                    </tr>
+
+                    <tr v-for="info in infos" :id="info.id">
+                        <td>{{ info.id }}</td>
+                        <td>{{ info.employee_name }}</td>
+                        <td>{{ info.email }}</td>
+                        <td class="pull-left">{{ info.monthly }}</td>
+                        <td>{{ info.birth }}</td>
+
+                        <td class="" role="button">
+                            <button @click="duplicate" :data-id="info.id" class="btn btn-primary" type="submit"
+                                aria-label="left Align">
+                                <i class="fa fa-files-o" aria-hidden="true"></i> Duplicate
+                            </button>
+
+                            <button @click="deleteLine" :data-id="info.id" class="btn btn-danger" type="submit">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tfoot>
+                    <tr id="totalRow" style="display:table-row">
+                        <td class="array" name="field1">{{ totalEmployee }}</td>
+                        <td colspan="2" class="array" name="field2"></td>
+                        <td class="array" name="field3">{{ somme }}</td>
+                        <td colspan="2" class="array" name="field4"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <script>
+            const vue = new Vue({
+                el: '#app',
+                data() {
+                    return {
+                        infos: [],
+                        somme: 0,
+                        totalEmployee: 0,
+                        email: [],
+                        sortAsc: true 
+                    }
+                },
+
+                methods: {
+                    checkRows: function() {
+                        if(this.infos.length < 1) {
+                            document.querySelector('#emptyLine').style.display = 'table-row';
+                            document.querySelector('#totalRow').style.display = 'none';
+                        }
+                        else {
+                            document.querySelector('#emptyLine').style.display = 'none';
+                            document.querySelector('#totalRow').style.display = 'table-row';
+                        }
+                    },
+                    duplicate: function (event) {
+                        var lineId = event.target.dataset.id; //recupere data-id
+                        var numberLine = document.getElementById(lineId).cloneNode(true); //id ligne
+                        var arrayPopulate = document.getElementById('duplicate');
+                        arrayPopulate.appendChild(numberLine);
+                    },
+                    deleteLine: function (event) {
+                        var lineId2 = event.target.dataset.id; //recupere data-delete
+                        var lineIndex = this.infos.findIndex(item => item.id == lineId2);
+                        this.infos.splice(lineIndex, 1);
+                        this.checkRows();
+                    },
+                    sortedArray: function () {
+                        if(this.sortAsc) {
+                            this.infos.sort((a, b) => (a.monthly > b.monthly) ? 1 : -1);
+                        }
+                        else {
+                            this.infos.sort((a, b) => (a.monthly < b.monthly) ? 1 : -1);
+                        }
+                        this.sortAsc = !this.sortAsc;                     
+                    }
+                },
+
+                mounted: function () {
+                    axios
+                        .get('http://dummy.restapiexample.com/api/v1/employees')
+                        .then(response => {
+                            this.infos = response.data.data;
+
+                            let dateNow = new Date().getFullYear();
+
+                            for (var i = 0; i < this.infos.length; i++) {
+                                this.infos[i].monthly = parseFloat((this.infos[i].employee_salary / 12).toFixed(2));
+                                this.somme += parseFloat(this.infos[i].monthly); //conversion en entier
+
+                                this.totalEmployee++; //incrementation du nombre d'employé
+                                this.infos[i].birth = dateNow - parseInt(this.infos[i]
+                                .employee_age); //calcule date
+
+                                let strg = this.infos[i].employee_name.toLowerCase();
+                                let tab = strg.split(" ");
+                                let firstname = tab[0].charAt(0); //recup 1ere lettre du prenom
+                                let lastname = tab[
+                                1]; //recup nom                                                                            
+                                this.infos[i].email = firstname + "." + lastname + "@email.com";
+                            }
+                            this.somme = this.somme.toFixed(2); //2 decimales apres la virgule
+
+                            
+                            this.checkRows();
+                            console.log(this.infos);
+                        })
+                        .catch(e => {
+                            console.log(e);
+                        })
+                },
+            });
+        </script>
+    </div>
+</body>
+
+</html>
