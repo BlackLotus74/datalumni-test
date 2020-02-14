@@ -99,7 +99,16 @@
                     duplicate: function (event) {
                         var lineId = event.target.dataset.id; //recupere data-id
                         var numberLine = document.getElementById(lineId).cloneNode(true); 
-                        document.getElementById('duplicate').appendChild(numberLine); 
+                        var arrayPopulate = document.getElementById('duplicate').appendChild(numberLine); 
+
+                        //////////// test délégation d'événement \\\\\\\\\\\\\\\\\\
+
+                        /*document.getElementById(lineId).addEventListener('click', function(event) {
+                            var initElem = event.target.dataset.id;
+                            if(initElem.id == 'info.id') {
+                                alert('booom');
+                            }
+                        });*/
                     },
 
                     deleteLine: function (event) {
